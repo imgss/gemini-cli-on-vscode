@@ -1,0 +1,12 @@
+# Dependencies
+/node_modules
+
+# Build output
+/out
+
+# VSCode
+.vscode-test/
+.vscode-test.log
+
+# macOS
+.DS_Store

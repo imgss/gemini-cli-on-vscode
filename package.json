@@ -1,0 +1,68 @@
+{
+  "name": "gemini-cli-on-vscode",
+  "displayName": "Gemini CLI on VSCode",
+  "icon": "images/icon.png",
+  "description": "Run the Gemini CLI in an integrated terminal within VSCode.",
+  "publisher": "d3j",
+  "author": "Joji Jorge Senda",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d3j/gemini-cli-on-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/d3j/gemini-cli-on-vscode/issues"
+  },
+  "keywords": ["gemini", "google", "ai", "cli", "terminal"],
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:gemini-cli-vscode.start"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gemini-cli-vscode.startInNewPane",
+        "title": "Gemini CLI: Start in New Pane",
+        "icon": "images/icon.png"
+      },
+      {
+        "command": "gemini-cli-vscode.startInActivePane",
+        "title": "Gemini CLI: Start in Active Pane"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "gemini-cli-vscode.startInNewPane",
+          "group": "navigation",
+          "when": "true"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9"
+  }
+}
