@@ -10,6 +10,9 @@
 
 ## 💡 Why This Extension is Revolutionary
 
+- ❌ Traditional: Gemini CLI only runs in terminal
+- ✅ Innovation: Editor integration with Claude Code-like experience
+
 ### 🔄 Traditional Limitations
 
 - **Gemini CLI**: Powerful but **only runs in terminal panels**
@@ -44,8 +47,12 @@
 - No context switching between terminal and editor
 - Natural integration with your development flow
 
-### 🆕 Smart Features (v0.0.2)
+### 🆕 Smart Features
 
+**v0.0.3**
+- **Send Open Files**: Send all open editor tabs to Gemini CLI with one command
+
+**v0.0.2**
 - **Auto-navigation**: Automatically navigates to your workspace folder
 - **Terminal reuse**: Focuses existing Gemini CLI instead of creating duplicates
 - **Custom keybindings**: Set your own keyboard shortcuts
@@ -87,6 +94,20 @@ Recommended shortcuts that won't conflict:
 - `Cmd+Shift+Alt+G` (Mac) / `Ctrl+Shift+Alt+G` (Windows/Linux)
 - `Cmd+K G` (Mac) / `Ctrl+K G` (Windows/Linux)
 
+### 📁 Send Open Files to Gemini CLI
+
+Send all currently open files to an active Gemini CLI session:
+
+**Option 1: Right-click in editor**
+- Right-click anywhere in the editor
+- Select "Gemini CLI: Send Open Files"
+
+**Option 2: Command Palette**
+- Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+- Run "Gemini CLI: Send Open Files"
+
+All open file paths will be sent with @ prefix to the active Gemini CLI session.
+
 ## 💡 Real-World Usage Examples
 
 ### Code Review Request
@@ -121,10 +142,10 @@ Recommended shortcuts that won't conflict:
 
 | Feature | Gemini CLI | This Extension | Gemini Code Assist | Claude Code |
 |---------|-----------|----------------|-------------------|-------------|
-| **Runs in editor pane** | ❌ | ✅ | ❌ (sidebar) | ✅ |
+| **Runs in editor pane** | ❌ (terminal) | ✅ | ❌ (sidebar) | ✅ |
 | **Uses Gemini models** | ✅ | ✅ | ✅ | ❌ |
 | **One-click launch** | ❌ | ✅ | ✅ | ✅ |
-| **Free to use** | ✅ | ✅ | ✅ (6k req/day) | ❌ ($20/mo) |
+| **Free to use** | ✅ | ✅ | ✅ | ❌ |
 | **Terminal-based interface** | ✅ | ✅ | ❌ | ✅ |
 | **File context (@)** | ✅ | ✅ | ✅ | ✅ |
 | **Code generation** | ✅ | ✅ | ✅ | ✅ |

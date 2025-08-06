@@ -2,7 +2,7 @@
   "name": "gemini-cli-on-vscode",
   "displayName": "Gemini CLI on VSCode",
   "icon": "images/icon.png",
-  "description": "Run the Gemini CLI in an integrated terminal within VSCode.",
+  "description": "Run Gemini CLI in editor panes like Claude Code - no more terminal switching",
   "publisher": "d3j",
   "author": "Joji Jorge Senda",
   "repository": {
@@ -13,13 +13,11 @@
     "url": "https://github.com/d3j/gemini-cli-on-vscode/issues"
   },
   "keywords": ["gemini", "google", "ai", "cli", "terminal"],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Productivity",
-    "AI",
     "Other"
   ],
   "activationEvents": [
@@ -36,6 +34,10 @@
       {
         "command": "gemini-cli-vscode.startInActivePane",
         "title": "Gemini CLI: Start in Active Pane"
+      },
+      {
+        "command": "gemini-cli-vscode.sendOpenFiles",
+        "title": "Gemini CLI: Send Open Files"
       }
     ],
     "menus": {
@@ -44,6 +46,13 @@
           "command": "gemini-cli-vscode.startInNewPane",
           "group": "navigation",
           "when": "true"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "gemini-cli-vscode.sendOpenFiles",
+          "group": "5_cutcopypaste@99",
+          "when": "editorTextFocus"
         }
       ]
     },

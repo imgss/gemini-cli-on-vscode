@@ -44,6 +44,48 @@ function createOrFocusTerminal(context: vscode.ExtensionContext, location: vscod
     terminal.show();
 }
 
+function sendOpenFilesToGemini() {
+    // Find existing Gemini CLI terminal
+    const terminal = geminiTerminals.get('newPane') || geminiTerminals.get('activePane');
+    
+    if (!terminal) {
+        vscode.window.showWarningMessage('Gemini CLI is not running. Please start it first.');
+        return;
+    }
+    
+    // Check if terminal is still alive
+    const allTerminals = vscode.window.terminals;
+    if (!allTerminals.includes(terminal)) {
+        vscode.window.showWarningMessage('Gemini CLI terminal was closed. Please start it again.');
+        return;
+    }
+    
+    // Get all open files
+    const openFiles = vscode.window.tabGroups.all
+        .flatMap(group => group.tabs)
+        .filter(tab => tab.input instanceof vscode.TabInputText)
+        .map(tab => {
+            const uri = (tab.input as vscode.TabInputText).uri;
+            return vscode.workspace.asRelativePath(uri);
+        });
+    
+    if (openFiles.length === 0) {
+        vscode.window.showInformationMessage('No files are currently open.');
+        return;
+    }
+    
+    // Send to terminal: Add files without executing
+    // Show terminal first and wait a bit for focus
+    terminal.show();
+    
+    // Small delay to ensure terminal is focused and ready
+    setTimeout(() => {
+        terminal.sendText(` @${openFiles.join(' @')} `, false);
+    }, 100);
+    
+    vscode.window.showInformationMessage(`Sent ${openFiles.length} file(s) to Gemini CLI`);
+}
+
 export function activate(context: vscode.ExtensionContext) {
     
     let startInNewPane = vscode.commands.registerCommand('gemini-cli-vscode.startInNewPane', () => {
@@ -52,6 +94,10 @@ export function activate(context: vscode.ExtensionContext) {
     
     let startInActivePane = vscode.commands.registerCommand('gemini-cli-vscode.startInActivePane', () => {
         createOrFocusTerminal(context, { viewColumn: vscode.ViewColumn.Active });
+    });
+    
+    let sendOpenFiles = vscode.commands.registerCommand('gemini-cli-vscode.sendOpenFiles', () => {
+        sendOpenFilesToGemini();
     });
     
     // Clean up terminals map when terminals are closed
@@ -63,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
     
-    context.subscriptions.push(startInNewPane, startInActivePane);
+    context.subscriptions.push(startInNewPane, startInActivePane, sendOpenFiles);
 }
 
 export function deactivate() {
