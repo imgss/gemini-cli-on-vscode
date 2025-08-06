@@ -1,60 +1,208 @@
 # Gemini CLI on VSCode
 
-Run the Gemini CLI seamlessly within your Visual Studio Code environment.
+[🇯🇵 日本語版](README-ja.md) | **🇺🇸 English**
 
-This extension provides a convenient way to launch the Gemini CLI directly in a VSCode terminal, either in the active pane or in a new pane to the side.
+## 🎨 Gemini CLI Running in Editor Windows
 
-## Features
+### Finally: The Same Claude Code Experience with Gemini CLI
 
-*   **Launch Gemini CLI with a single click:** An icon in the editor title bar allows you to instantly open a new terminal running the Gemini CLI.
-*   **Flexible Layout:**
-    *   Open in a new pane (`gemini-cli-vscode.startInNewPane`) to keep your current editor layout intact.
-    *   Open in the active pane (`gemini-cli-vscode.startInActivePane`) for quick access in your current context.
-*   **Command Palette Integration:** Access both launch commands directly from the VSCode Command Palette.
+![Editor Integration Demo](images/onVScode-ja.png)
 
-## Prerequisites
+## 💡 Why This Extension is Revolutionary
 
-You must have the Gemini CLI (`gemini`) installed and configured on your system and available in your system's PATH.
+### 🔄 Traditional Limitations
 
-## How to Use
+- **Gemini CLI**: Powerful but **only runs in terminal panels**
+- **Gemini Code Assist**: Editor integrated but **a different tool entirely**
+- **Claude Code**: Perfect editor integration but **can't use Gemini**
 
-1.  **Click the Sparkle Icon:** Click the `$(sparkle)` icon in the top-right of any editor pane to launch the Gemini CLI in a new pane.
-2.  **Use the Command Palette (`Cmd+Shift+P` or `Ctrl+Shift+P`):
-    *   Search for `Gemini CLI: Start in New Pane` to open it in a split view.
-    *   Search for `Gemini CLI: Start in Active Pane` to open it as a new tab in the current pane.
+### ✨ This Extension's Innovation
 
-## Development / Installation from Source
+#### Brings Claude Code's editor integration experience to Gemini CLI
 
-If you wish to contribute to this extension or install it directly from source, follow these steps:
+- Gemini CLI runs directly in editor windows
+- No more switching between terminal and editor
+- The exact workflow Claude Code users love, now with Gemini
 
-### Development Prerequisites
+## ⚡ Key Features
 
-*   Node.js (LTS version recommended)
-*   npm (Node Package Manager)
-*   Git
+### 🖱️ One-Click Launch
 
-### Steps
+- **Editor title bar icon** for instant access
+- **Command palette** integration
+- Choose between **new pane** or **active pane**
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/d3j/gemini-cli-on-vscode.git
-    ```
-2.  **Navigate into the project directory:**
-    ```bash
-    cd gemini-cli-on-vscode
-    ```
-3.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-4.  **Compile the TypeScript code:**
-    ```bash
-    npm run compile
-    ```
-5.  **Run in VSCode:**
-    *   Open the project folder in Visual Studio Code.
-    *   Press `F5` to start a debugging session. A new VSCode window (Extension Development Host) will open with the extension enabled.
+### 🔧 True Editor Integration
 
-## Author
+- Opens as an editor tab, not a terminal panel
+- Side-by-side with your code files
+- Maintains your editor layout
 
-Joji Jorge Senda (d3j)
+### 💻 Seamless Workflow
+
+- Keep your code visible while using AI assistance
+- No context switching between terminal and editor
+- Natural integration with your development flow
+
+### 🆕 Smart Features (v0.0.2)
+
+- **Auto-navigation**: Automatically navigates to your workspace folder
+- **Terminal reuse**: Focuses existing Gemini CLI instead of creating duplicates
+- **Custom keybindings**: Set your own keyboard shortcuts
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+```bash
+# Install Gemini CLI (required)
+npm install -g @google/gemini-cli
+
+# Authenticate (first time only)
+gemini
+# Complete Google account authentication in browser
+```
+
+### Usage
+
+1. **Open any project in VS Code**
+2. **Click the ✨ (sparkle) icon** in the editor title bar
+3. **Gemini CLI launches in a new editor pane!**
+
+Or use Command Palette:
+
+1. **Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)**
+2. **Search for "Gemini CLI"**
+3. **Choose your preferred launch mode**
+
+### ⌨️ Custom Keyboard Shortcuts (Optional)
+
+Set your own keybindings:
+
+1. Open Keyboard Shortcuts: `Cmd+K Cmd+S` (Mac) or `Ctrl+K Ctrl+S` (Windows/Linux)
+2. Search for "Gemini CLI"
+3. Click the pencil icon to assign your preferred keys
+
+Recommended shortcuts that won't conflict:
+- `Cmd+Shift+Alt+G` (Mac) / `Ctrl+Shift+Alt+G` (Windows/Linux)
+- `Cmd+K G` (Mac) / `Ctrl+K G` (Windows/Linux)
+
+## 💡 Real-World Usage Examples
+
+### Code Review Request
+
+```bash
+# After Gemini CLI launches in editor pane
+@src/components/Button.tsx Review this component and suggest improvements
+```
+
+### Project Architecture Analysis
+
+```bash
+@. Analyze the project architecture and explain the main design patterns
+```
+
+### Error Resolution
+
+```bash
+@package.json @src/main.ts I'm getting build errors. Help me fix them
+```
+
+## 🆚 Why Choose This Over Alternatives?
+
+### 🎯 Perfect For
+
+- **Developers who love Claude Code's UX** but want to use Gemini
+- **Power users** who prefer terminal-based AI tools
+- **Anyone tired** of switching between terminal and editor
+- **Teams** already using Gemini CLI
+
+### 📊 Comparison
+
+| Feature | Gemini CLI | This Extension | Gemini Code Assist | Claude Code |
+|---------|-----------|----------------|-------------------|-------------|
+| **Runs in editor pane** | ❌ | ✅ | ❌ (sidebar) | ✅ |
+| **Uses Gemini models** | ✅ | ✅ | ✅ | ❌ |
+| **One-click launch** | ❌ | ✅ | ✅ | ✅ |
+| **Free to use** | ✅ | ✅ | ✅ (6k req/day) | ❌ ($20/mo) |
+| **Terminal-based interface** | ✅ | ✅ | ❌ | ✅ |
+| **File context (@)** | ✅ | ✅ | ✅ | ✅ |
+| **Code generation** | ✅ | ✅ | ✅ | ✅ |
+
+## 🛠️ Development
+
+### Local Development
+
+```bash
+git clone https://github.com/d3j/gemini-cli-on-vscode.git
+cd gemini-cli-on-vscode
+npm install
+npm run compile
+```
+
+### Debugging
+
+1. Open the project in VS Code
+2. Press `F5` to launch Extension Development Host
+3. Test the extension in the new VS Code window
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### Q: "gemini: command not found" error
+
+```bash
+# Solution: Install Gemini CLI
+npm install -g @google/gemini-cli
+```
+
+#### Q: Authentication error
+
+```bash
+# Solution: Authenticate directly in terminal first
+gemini
+# Complete browser authentication, then retry extension
+```
+
+#### Q: Extension not appearing in editor title bar
+
+- Ensure you have an active editor open
+- Try reloading VS Code window (`Cmd+R` / `Ctrl+R`)
+
+## 🤝 Contributing
+
+Bug reports, feature requests, and pull requests are welcome!
+
+- **Bug Reports**: [Issues](https://github.com/d3j/gemini-cli-on-vscode/issues)
+- **Feature Requests**: [Issues](https://github.com/d3j/gemini-cli-on-vscode/issues)
+- **Pull Requests**: [Pull Requests](https://github.com/d3j/gemini-cli-on-vscode/pulls)
+
+## 🙏 Acknowledgments
+
+- [Gemini CLI](https://github.com/google-gemini/gemini-cli) by Google
+- [Claude Code](https://claude.ai/claude-code) by Anthropic
+- VS Code Extension developer community
+
+---
+
+## 📈 If You Like This Extension
+
+⭐ **Please star on GitHub!**
+🐛 **Report any bugs you find**
+💡 **Share your feature ideas**
+📢 **Share with your team**
+
+[⭐ Star on GitHub](https://github.com/d3j/gemini-cli-on-vscode) | [🐛 Report Bug](https://github.com/d3j/gemini-cli-on-vscode/issues) | [💡 Request Feature](https://github.com/d3j/gemini-cli-on-vscode/issues)
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details
+
+## 👤 Author
+
+**Joji Jorge Senda** ([@d3j](https://github.com/d3j))
+
+---
+
+Born from the daily frustration of switching between terminal and editor while using AI coding assistants. This extension brings the best of both worlds - Claude Code's elegant editor integration with Gemini CLI's powerful capabilities. This documentation expects to make a mundane extension seem like a world-changing feature. But maybe that's okay. If a small tool solves someone's small problem, the world becomes a little better.

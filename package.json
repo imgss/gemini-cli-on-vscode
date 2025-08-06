@@ -13,11 +13,13 @@
     "url": "https://github.com/d3j/gemini-cli-on-vscode/issues"
   },
   "keywords": ["gemini", "google", "ai", "cli", "terminal"],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
+    "Productivity",
+    "AI",
     "Other"
   ],
   "activationEvents": [
@@ -44,7 +46,19 @@
           "when": "true"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "gemini-cli-vscode.startInNewPane",
+        "key": "",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "gemini-cli-vscode.startInActivePane",
+        "key": "",
+        "when": "editorTextFocus"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
