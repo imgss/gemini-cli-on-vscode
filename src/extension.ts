@@ -1,7 +1,160 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Store active Gemini CLI terminals
 const geminiTerminals = new Map<string, vscode.Terminal>();
+
+// Status bar items
+let saveHistoryStatusBarItem: vscode.StatusBarItem;
+
+function getHistoryFilePath(): string | undefined {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        return undefined;
+    }
+    
+    const historyDir = path.join(workspaceFolder.uri.fsPath, '.gemini-history');
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(historyDir)) {
+        fs.mkdirSync(historyDir, { recursive: true });
+    }
+    
+    // Use date as filename
+    const dateStr = new Date().toISOString().split('T')[0];
+    return path.join(historyDir, `${dateStr}.md`);
+}
+
+
+async function saveClipboardToHistory() {
+    // Save original clipboard content
+    const originalClipboard = await vscode.env.clipboard.readText();
+    
+    let textToSave: string | undefined;
+    
+    // Check if we're in terminal context
+    const activeTerminal = vscode.window.activeTerminal;
+    if (activeTerminal) {
+        try {
+            // Try to copy terminal selection
+            await vscode.commands.executeCommand('workbench.action.terminal.copySelection');
+            
+            // Wait for copy to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Get the copied terminal text
+            const terminalText = await vscode.env.clipboard.readText();
+            
+            // Check if we got new text from terminal
+            if (terminalText && terminalText !== originalClipboard) {
+                textToSave = terminalText;
+            }
+        } catch (error) {
+            // If copy selection fails, fall back to clipboard
+            console.log('Terminal copy selection failed, using clipboard content');
+        }
+    }
+    
+    // If no terminal text, try editor selection
+    if (!textToSave) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && editor.selection && !editor.selection.isEmpty) {
+            textToSave = editor.document.getText(editor.selection);
+        }
+    }
+    
+    // Finally, fall back to original clipboard if nothing else
+    if (!textToSave) {
+        textToSave = originalClipboard;
+    }
+    
+    if (!textToSave || textToSave.trim().length === 0) {
+        vscode.window.showInformationMessage(
+            'No text selected. Select text in terminal or editor first.'
+        );
+        // Restore original clipboard
+        if (originalClipboard) {
+            await vscode.env.clipboard.writeText(originalClipboard);
+        }
+        return;
+    }
+    
+    const historyPath = getHistoryFilePath();
+    if (!historyPath) {
+        vscode.window.showErrorMessage('No workspace folder open');
+        // Restore original clipboard
+        if (originalClipboard) {
+            await vscode.env.clipboard.writeText(originalClipboard);
+        }
+        return;
+    }
+    
+    // Format content with timestamp
+    const timestamp = new Date().toTimeString().split(' ')[0];
+    const header = `\n## [${timestamp}]\n`;
+    const content = textToSave.trim();
+    const formattedContent = `${header}${content}\n`;
+    
+    // Create file with header if it doesn't exist
+    if (!fs.existsSync(historyPath)) {
+        const dateStr = new Date().toISOString().split('T')[0];
+        const fileHeader = `# Gemini CLI History - ${dateStr}\n`;
+        fs.writeFileSync(historyPath, fileHeader);
+    }
+    
+    // Append to history file
+    fs.appendFileSync(historyPath, formattedContent);
+    
+    // Restore original clipboard
+    if (originalClipboard) {
+        await vscode.env.clipboard.writeText(originalClipboard);
+    }
+    
+    vscode.window.showInformationMessage('Saved to history');
+}
+
+async function sendSelectedToGemini() {
+    let selectedText: string | undefined;
+    
+    // Only get text from editor selection - this function is for editor context only
+    const editor = vscode.window.activeTextEditor;
+    if (editor && editor.selection && !editor.selection.isEmpty) {
+        selectedText = editor.document.getText(editor.selection);
+    }
+    
+    if (!selectedText || selectedText.trim().length === 0) {
+        vscode.window.showInformationMessage(
+            'No text selected in editor. Select text in editor first.'
+        );
+        return;
+    }
+    
+    // Find active Gemini CLI terminal
+    let geminiTerminal: vscode.Terminal | undefined;
+    
+    for (const terminal of geminiTerminals.values()) {
+        if (vscode.window.terminals.includes(terminal)) {
+            geminiTerminal = terminal;
+            break;
+        }
+    }
+    
+    if (!geminiTerminal) {
+        vscode.window.showWarningMessage('Gemini CLI is not running. Please start it first.');
+        return;
+    }
+    
+    // Show terminal and send text
+    geminiTerminal.show();
+    
+    // Add a small delay to ensure terminal is focused
+    setTimeout(() => {
+        geminiTerminal!.sendText(selectedText!, false);
+    }, 100);
+    
+    vscode.window.showInformationMessage('Sent selected text to Gemini CLI');
+}
 
 function createOrFocusTerminal(context: vscode.ExtensionContext, location: vscode.TerminalOptions['location']) {
     const key = (location as any)?.viewColumn === vscode.ViewColumn.Beside ? 'newPane' : 'activePane';
@@ -46,17 +199,17 @@ function createOrFocusTerminal(context: vscode.ExtensionContext, location: vscod
 
 function sendOpenFilesToGemini() {
     // Find existing Gemini CLI terminal
-    const terminal = geminiTerminals.get('newPane') || geminiTerminals.get('activePane');
+    let activeTerminal: vscode.Terminal | undefined;
     
-    if (!terminal) {
-        vscode.window.showWarningMessage('Gemini CLI is not running. Please start it first.');
-        return;
+    for (const terminal of geminiTerminals.values()) {
+        if (vscode.window.terminals.includes(terminal)) {
+            activeTerminal = terminal;
+            break;
+        }
     }
     
-    // Check if terminal is still alive
-    const allTerminals = vscode.window.terminals;
-    if (!allTerminals.includes(terminal)) {
-        vscode.window.showWarningMessage('Gemini CLI terminal was closed. Please start it again.');
+    if (!activeTerminal) {
+        vscode.window.showWarningMessage('Gemini CLI is not running. Please start it first.');
         return;
     }
     
@@ -74,30 +227,96 @@ function sendOpenFilesToGemini() {
         return;
     }
     
-    // Send to terminal: Add files without executing
-    // Show terminal first and wait a bit for focus
-    terminal.show();
+    const filesText = ` @${openFiles.join(' @')} `;
+    
+    // Send to terminal
+    activeTerminal.show();
     
     // Small delay to ensure terminal is focused and ready
     setTimeout(() => {
-        terminal.sendText(` @${openFiles.join(' @')} `, false);
+        activeTerminal!.sendText(filesText, false);
     }, 100);
     
     vscode.window.showInformationMessage(`Sent ${openFiles.length} file(s) to Gemini CLI`);
 }
 
+
+function createStatusBarItems(context: vscode.ExtensionContext) {
+    // Create status bar item for Save to History
+    saveHistoryStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    saveHistoryStatusBarItem.command = 'gemini-cli-vscode.saveClipboardToHistory';
+    saveHistoryStatusBarItem.text = '$(save) Save to History';
+    saveHistoryStatusBarItem.tooltip = 'Save terminal/editor selection to history';
+    context.subscriptions.push(saveHistoryStatusBarItem);
+}
+
+function updateStatusBarVisibility() {
+    // Show status bar only when Gemini CLI terminal is active
+    const activeTerminal = vscode.window.activeTerminal;
+    const activeEditor = vscode.window.activeTextEditor;
+    
+    // Hide if editor is active (not terminal)
+    if (activeEditor) {
+        saveHistoryStatusBarItem.hide();
+        return;
+    }
+    
+    // Check if the active terminal is a Gemini CLI terminal
+    let isGeminiTerminal = false;
+    if (activeTerminal) {
+        for (const terminal of geminiTerminals.values()) {
+            if (terminal === activeTerminal) {
+                isGeminiTerminal = true;
+                break;
+            }
+        }
+    }
+    
+    if (isGeminiTerminal) {
+        saveHistoryStatusBarItem.show();
+    } else {
+        saveHistoryStatusBarItem.hide();
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
     
-    let startInNewPane = vscode.commands.registerCommand('gemini-cli-vscode.startInNewPane', () => {
+    // Create status bar items
+    createStatusBarItems(context);
+    
+    const startInNewPane = vscode.commands.registerCommand('gemini-cli-vscode.startInNewPane', () => {
         createOrFocusTerminal(context, { viewColumn: vscode.ViewColumn.Beside });
+        updateStatusBarVisibility();
     });
     
-    let startInActivePane = vscode.commands.registerCommand('gemini-cli-vscode.startInActivePane', () => {
+    const startInActivePane = vscode.commands.registerCommand('gemini-cli-vscode.startInActivePane', () => {
         createOrFocusTerminal(context, { viewColumn: vscode.ViewColumn.Active });
+        updateStatusBarVisibility();
     });
     
-    let sendOpenFiles = vscode.commands.registerCommand('gemini-cli-vscode.sendOpenFiles', () => {
+    const sendOpenFiles = vscode.commands.registerCommand('gemini-cli-vscode.sendOpenFiles', () => {
         sendOpenFilesToGemini();
+    });
+    
+    const saveClipboard = vscode.commands.registerCommand('gemini-cli-vscode.saveClipboardToHistory', async () => {
+        await saveClipboardToHistory();
+    });
+    
+    const sendSelected = vscode.commands.registerCommand('gemini-cli-vscode.sendSelectedToGemini', async () => {
+        await sendSelectedToGemini();
+    });
+    
+    // Update status bar visibility when terminal or editor changes
+    vscode.window.onDidChangeActiveTerminal(() => {
+        updateStatusBarVisibility();
+    });
+    
+    vscode.window.onDidOpenTerminal(() => {
+        updateStatusBarVisibility();
+    });
+    
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        updateStatusBarVisibility();
     });
     
     // Clean up terminals map when terminals are closed
@@ -107,9 +326,19 @@ export function activate(context: vscode.ExtensionContext) {
                 geminiTerminals.delete(key);
             }
         });
+        updateStatusBarVisibility();
     });
     
-    context.subscriptions.push(startInNewPane, startInActivePane, sendOpenFiles);
+    // Initial visibility update
+    updateStatusBarVisibility();
+    
+    context.subscriptions.push(
+        startInNewPane, 
+        startInActivePane, 
+        sendOpenFiles,
+        saveClipboard,
+        sendSelected
+    );
 }
 
 export function deactivate() {

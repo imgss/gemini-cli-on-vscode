@@ -49,10 +49,19 @@
 
 ### 🆕 Smart Features
 
+**v0.0.4** ✨ NEW
+
+- **Conversation History (Mock)**: ~~Auto~~ Manually save Gemini CLI output
+  - ~~Right-click~~ Status bar button for easy saving to date-based files `.gemini-history/YYYY-MM-DD.md`
+- **Editor to Gemini**: Send editor text to Gemini CLI
+  - Select text in editor → Right-click menu → "Send to Gemini"
+
 **v0.0.3**
+
 - **Send Open Files**: Send all open editor tabs to Gemini CLI with one command
 
 **v0.0.2**
+
 - **Auto-navigation**: Automatically navigates to your workspace folder
 - **Terminal reuse**: Focuses existing Gemini CLI instead of creating duplicates
 - **Custom keybindings**: Set your own keyboard shortcuts
@@ -98,15 +107,39 @@ Recommended shortcuts that won't conflict:
 
 Send all currently open files to an active Gemini CLI session:
 
-**Option 1: Right-click in editor**
+**Right-click in editor**
 - Right-click anywhere in the editor
 - Select "Gemini CLI: Send Open Files"
 
-**Option 2: Command Palette**
-- Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-- Run "Gemini CLI: Send Open Files"
-
 All open file paths will be sent with @ prefix to the active Gemini CLI session.
+
+### 💾 Save Conversation History
+
+Save important Gemini CLI conversations to `.gemini-history/YYYY-MM-DD.md`:
+
+**From Gemini CLI Terminal:**
+- Select text → Click "Save to History" button in status bar
+
+**Custom Keyboard Shortcut:**
+- Set your own in VSCode Keyboard Shortcuts settings
+
+### 📤 Send to Gemini
+
+**Send Selected Text:**
+- Select text in editor → Right-click → "Gemini CLI: Send to Gemini"
+- Or set a custom keyboard shortcut in settings
+
+**Send All Open Files:**
+- Right-click in editor → "Gemini CLI: Send Open Files"
+- All open file paths are sent with @ prefix
+
+### ⌨️ Command Palette
+
+All features are also available from the Command Palette:
+
+- Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+- "Gemini CLI: Send Open Files"
+- "Gemini CLI: Save to History"
 
 ## 💡 Real-World Usage Examples
 
@@ -149,6 +182,8 @@ All open file paths will be sent with @ prefix to the active Gemini CLI session.
 | **Terminal-based interface** | ✅ | ✅ | ❌ | ✅ |
 | **File context (@)** | ✅ | ✅ | ✅ | ✅ |
 | **Code generation** | ✅ | ✅ | ✅ | ✅ |
+| **Conversation history** | ❌ | ✅ (Manual) | ❌ | ✅ (JSON) |
+| **Send editor text to CLI** | ❌ | ✅ | ✅ | ❌ (Separate terminal) |
 
 ## 🛠️ Development
 
