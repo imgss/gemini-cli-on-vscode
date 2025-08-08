@@ -191,6 +191,7 @@ function createOrFocusTerminal(context: vscode.ExtensionContext, location: vscod
         // Use quotes to handle paths with spaces
         terminal.sendText(`cd "${workspacePath}"`);
     }
+    terminal.sendText(`command -v nvm &> /dev/null && nvm use 20`);
     
     // Launch Gemini CLI
     terminal.sendText("gemini");
